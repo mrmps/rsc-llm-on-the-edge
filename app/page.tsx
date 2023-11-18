@@ -5,8 +5,10 @@ import { parseVercelId } from "./parse-vercel-id";
 import { OpenAIStream } from "ai";
 import { Configuration, OpenAIApi } from "openai-edge";
 import { Suspense } from "react";
-import { Tokens } from "ai/react";
+import { Tokens } from "./components/tokens";
 import { kv } from "@vercel/kv";
+import BoldFirstLetter from "./components/bold-first";
+import { FormattedTokensWrapper } from "./components/formatted";
 
 export const runtime = "edge";
 
@@ -85,7 +87,7 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
             setTimeout(
               r,
               // get a random number between 10ms and 50ms to simulate a random delay
-              Math.floor(Math.random() * 40) + 10
+              Math.floor(Math.random() * 2) + 20
             )
           );
         }
@@ -122,4 +124,12 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
   });
 
   return <Tokens stream={stream} />;
+}
+
+function Card({ children }) {
+  return (
+    <div style={{ border: '1px solid black', margin: '10px', padding: '10px' }}>
+      {children}
+    </div>
+  );
 }
