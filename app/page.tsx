@@ -65,13 +65,17 @@ export default async function Page() {
 
 // We add a wrapper component to avoid suspending the entire page while the OpenAI request is being made
 async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
-  const prompt =
-    "Act like as if you are a travel expert. Provide a list of 5 things to do in " +
-    city +
-    " in the " +
-    // The timezone helps the AI decide the correct state / location
-    timezone +
-    " timezone and start with 'here's a...'. Do NOT mention the timezone in your response.";
+  const prompt = `
+  "As a recommendation expert, I'm asked to list the top 10 Nike shoes specifically designed for walking long distances. Each recommendation should include:
+
+  1. Product Name — Alongside a brief description of where I found the information and reasons for its suitability.
+  2. Product Name — With details on the source of my information and why I believe it's a great choice.
+  3. Product Name — Including information about the source and its benefits for long-distance walking.
+
+  ... and so on up to 10.
+
+  Note: Only include shoes with outstanding reviews. "
+`;
 
   // See https://sdk.vercel.ai/docs/concepts/caching
   const cached = (await kv.get(prompt)) as string | undefined;
@@ -104,13 +108,7 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
     messages: [
       {
         role: "user",
-        content:
-          "Act like as if you are a travel expert. Provide a list of 5 things to do in " +
-          city +
-          " in the " +
-          // The timezone helps the AI decide the correct state / location
-          timezone +
-          " timezone and start with 'here's a...'. Do NOT mention the timezone in your response.",
+        content: prompt,
       },
     ],
   });
@@ -124,12 +122,4 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
   });
 
   return <Tokens stream={stream} />;
-}
-
-function Card({ children }) {
-  return (
-    <div style={{ border: '1px solid black', margin: '10px', padding: '10px' }}>
-      {children}
-    </div>
-  );
 }
